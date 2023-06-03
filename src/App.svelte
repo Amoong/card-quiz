@@ -3,6 +3,7 @@
   import { createRandomPicker } from "./utils/pick-random";
   import { HIRAGANA } from "./constants/characters";
   import { onMount, onDestroy } from "svelte";
+  import RowSelector from "./lib/RowSelector.svelte";
 
   const pickRandom = createRandomPicker(HIRAGANA);
 
@@ -29,6 +30,20 @@
   const removeRotate = () => {
     rotate = false;
   };
+
+  const rows = [
+    { label: "あ", checked: true },
+    { label: "か", checked: true },
+    { label: "さ", checked: true },
+    { label: "た", checked: true },
+    { label: "な", checked: true },
+    { label: "は", checked: true },
+    { label: "ま", checked: true },
+    { label: "や", checked: true },
+    { label: "ら", checked: true },
+    { label: "わ", checked: true },
+    { label: "ん", checked: true },
+  ];
 </script>
 
 <main>
@@ -54,6 +69,7 @@
       /></svg
     >
   </button>
+  <RowSelector {rows} />
 </main>
 
 <style lang="scss">
