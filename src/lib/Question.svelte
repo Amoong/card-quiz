@@ -3,7 +3,7 @@
 </script>
 
 <div class="question">
-  {text}
+  {text ?? "😓"}
 </div>
 
 <style>

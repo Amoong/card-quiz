@@ -1,37 +1,11 @@
 <script lang="ts">
   import Question from "./lib/Question.svelte";
-  import { createRandomPicker } from "./utils/pick-random";
-  import { HIRAGANA } from "./constants/characters";
+  import { getRandom } from "./utils/pick-random";
+  import { HIRAGANA, HIRAGANA_MAP } from "./constants/characters";
   import { onMount, onDestroy } from "svelte";
   import RowSelector from "./lib/RowSelector.svelte";
 
-  const pickRandom = createRandomPicker(HIRAGANA);
-
-  let pickedHiragana = pickRandom();
-  let buttonElem: HTMLElement | undefined;
-  let rotate = false;
-
-  onMount(() => {
-    buttonElem = document.getElementById("card-refresh-btn");
-
-    buttonElem?.addEventListener("animationend", removeRotate);
-  });
-
-  onDestroy(() => {
-    buttonElem?.removeEventListener("animationend", removeRotate);
-  });
-
-  const onClick = () => {
-    rotate = true;
-
-    pickedHiragana = pickRandom();
-  };
-
-  const removeRotate = () => {
-    rotate = false;
-  };
-
-  const rows = [
+  let rows = [
     { label: "あ", checked: true },
     { label: "か", checked: true },
     { label: "さ", checked: true },
@@ -44,6 +18,50 @@
     { label: "わ", checked: true },
     { label: "ん", checked: true },
   ];
+
+  let pickedHiragana = "";
+
+  let buttonElem: HTMLElement | undefined;
+  let rotate = false;
+
+  onMount(() => {
+    buttonElem = document.getElementById("card-refresh-btn");
+
+    buttonElem?.addEventListener("animationend", removeRotate);
+    selectRandomHiragana();
+  });
+
+  onDestroy(() => {
+    buttonElem?.removeEventListener("animationend", removeRotate);
+  });
+
+  const onClick = () => {
+    rotate = true;
+
+    selectRandomHiragana();
+  };
+
+  const selectRandomHiragana = () => {
+    let selectedHiraganas = rows
+      .filter((row) => row.checked)
+      .reduce((acc, cur) => {
+        return [...acc, ...HIRAGANA_MAP[cur.label]];
+      }, []);
+
+    pickedHiragana = getRandom(selectedHiraganas);
+  };
+
+  const removeRotate = () => {
+    rotate = false;
+  };
+
+  const uncheckAll = () => {
+    rows = rows.map((row) => ({ ...row, checked: false }));
+  };
+
+  const checkAll = () => {
+    rows = rows.map((row) => ({ ...row, checked: true }));
+  };
 </script>
 
 <main>
@@ -53,6 +71,7 @@
     <Question text={pickedHiragana} />
   </div>
   <button
+    class="pick-btn"
     style:transform={"rotate(360deg)"}
     id="card-refresh-btn"
     class:rotate
@@ -69,7 +88,11 @@
       /></svg
     >
   </button>
-  <RowSelector {rows} />
+  <RowSelector bind:rows />
+  <div class="control-btn-wrapper">
+    <button on:click={checkAll} class="check-btn">✅</button>
+    <button on:click={uncheckAll} class="uncheck-btn">❌</button>
+  </div>
 </main>
 
 <style lang="scss">
@@ -87,21 +110,22 @@
     font-size: 40px;
     font-weight: 500;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
 
   .card {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 
-  button {
+  .pick-btn {
     width: 50px;
     height: 50px;
     background-color: transparent;
     color: dodgerblue;
     border-radius: 10px;
     transform-origin: center;
+    margin-bottom: 30px;
 
     &:active {
       opacity: 0.8;
@@ -109,6 +133,21 @@
 
     &.rotate {
       animation: rotate 0.3s ease-in-out;
+    }
+  }
+
+  .control-btn-wrapper {
+    margin-top: 20px;
+  }
+
+  .check-btn,
+  .uncheck-btn {
+    background-color: transparent;
+    font-size: 30px;
+    transition: opacity 0.1s ease-in-out;
+
+    &:active {
+      opacity: 0.5;
     }
   }
 
