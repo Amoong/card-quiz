@@ -1,7 +1,7 @@
 <script lang="ts">
   import Question from "./lib/Question.svelte";
   import { getRandom } from "./utils/pick-random";
-  import { HIRAGANA, HIRAGANA_MAP } from "./constants/characters";
+  import { HIRAGANA_MAP } from "./constants/characters";
   import { onMount, onDestroy } from "svelte";
   import RowSelector from "./lib/RowSelector.svelte";
 
