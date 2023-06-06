@@ -1,9 +1,11 @@
 <script lang="ts">
   import Question from "./lib/Question.svelte";
-  import { getRandom } from "./utils/pick-random";
+  import { RandomPicker } from "./utils/randomPicker";
   import { HIRAGANA_MAP } from "./constants/characters";
   import { onMount, onDestroy } from "svelte";
   import RowSelector from "./lib/RowSelector.svelte";
+
+  const randomPicker = new RandomPicker([]);
 
   let rows = [
     { label: "あ", checked: true },
@@ -18,6 +20,13 @@
     { label: "わ", checked: true },
     { label: "ん", checked: true },
   ];
+  $: randomPicker.resetPool(
+    rows
+      .filter((row) => row.checked)
+      .reduce((acc, cur) => {
+        return [...acc, ...HIRAGANA_MAP[cur.label]];
+      }, [])
+  );
 
   let pickedHiragana = "";
 
@@ -42,13 +51,7 @@
   };
 
   const selectRandomHiragana = () => {
-    let selectedHiraganas = rows
-      .filter((row) => row.checked)
-      .reduce((acc, cur) => {
-        return [...acc, ...HIRAGANA_MAP[cur.label]];
-      }, []);
-
-    pickedHiragana = getRandom(selectedHiraganas);
+    pickedHiragana = randomPicker.pick();
   };
 
   const removeRotate = () => {
